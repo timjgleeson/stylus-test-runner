@@ -1,0 +1,29 @@
+{
+  "name": "stylus-test-runner",
+  "version": "0.0.0",
+  "description": "Stylus syntax adaptor for testing your stylus source code",
+  "main": "index.js",
+  "scripts": {
+    "test": "TODO"
+  },
+  "repository": {
+    "type": "git",
+    "url": "TODO"
+  },
+  "keywords": [
+    "Stylus",
+    "CSS",
+    "test",
+    "syntax"
+  ],
+  "author": "Jason Kuhrt <jasonkuhrt@me.com> (http://jasonkuhrt.com)",
+  "license": "MIT",
+  "dependencies": {
+    "mocha": "~1.8.1",
+    "stylus": "~0.32.0",
+    "clean-css": "~0.10.1",
+    "should": "~1.2.2",
+    "lodash": "~1.0.1",
+    "glob": "~3.1.20"
+  }
+}
