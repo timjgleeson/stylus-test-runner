@@ -42,9 +42,11 @@ function stylusTestRunner(customConfig) {
 
 function getDefaultTestDescription() {
   var fs = require('fs');
-  var npmPackage;
+  var packageName;
   try {
-     npmPackage = JSON.parse(fs.readFileSync('./package.json'));
+     packageName = JSON.parse(fs.readFileSync('./package.json')).name;
+  } catch (err) {
+    packageName = '';
   }
-  return npmPackage && npmPackage.name ? npmPackage.name : '' ;
+  return packageName;
 }
