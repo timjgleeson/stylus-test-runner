@@ -1,32 +1,50 @@
 
 
-var Mocha = require('mocha')
-var _     = require('lodash')
+var Mocha = require('mocha');
+var _     = require('lodash');
 
-module.exports = stylusTestRunner
+module.exports = stylusTestRunner;
 
 
 
-// customConfig:
-// describe       <String> Title used by Mocha top-level describe function
-// testDirPath    <String> the path where your styl tests are
-// stylus         <Object> stylus config
-// mocha          <Object> mocha config
+// @param  customConfig:
+//
+//          describe       <String>  Title used by Mocha top-level describe function
+//          testDirPath    <String>  the path where your styl tests are
+//          stylus         <Object>  stylus config
+//          mocha          <Object>  mocha config
 
 function stylusTestRunner(customConfig) {
 
   var defaultConfig = {
-    stylus      : {compress : true},
+    describe    : getDefaultTestDescription(),
     testDirPath : './test',
+    stylus      : {compress : true},
     mocha       : {reporter : 'spec'}
-  }
+  };
 
   //  global config will be used by runner
   //  for configing stylus compiler and test description / suite path
 
-  root.config = _.merge({}, defaultConfig, customConfig)
+  root.config = _.merge({}, defaultConfig, customConfig);
 
   new Mocha(config.mocha)
   .addFile(__dirname + '/runner')
-  .run()
+  .run();
+}
+
+
+
+//  @summary  Read the users npm package name property to provide a name for
+//            the test suite's initial 'describe'
+//
+//  @returns  <String>  '' || 'some-package-name'
+
+function getDefaultTestDescription() {
+  var fs = require('fs');
+  var npmPackage;
+  try {
+     npmPackage = JSON.parse(fs.readFileSync('./package.json'));
+  }
+  return npmPackage && npmPackage.name ? npmPackage.name : '' ;
 }
