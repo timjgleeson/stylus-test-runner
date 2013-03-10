@@ -28,7 +28,7 @@ $ make test
 
 ### Install
 
-I will eventually publish to Npm, add to `package.json` using git url for now
+I will eventually publish to Npm, add git url to `package.json` for now
 
 
 ### Api
