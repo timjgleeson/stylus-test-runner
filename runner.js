@@ -32,11 +32,13 @@ function runner(config) {
 }
 
 function renderStylus(stylusCode, config, callback) {
+  var CleanCSS = new cleanCSS()
+
   stylus(stylusCode, config)
-  .render(function(err, cssFromStylus) {
-    if (err) throw err
-    callback(cleanCSS.process(cssFromStylus))
-  })
+    .render(function(err, cssFromStylus) {
+      if (err) throw err
+      callback(CleanCSS.minify(cssFromStylus))
+    })
 }
 
 function forEachTest(config, callback) {
@@ -62,13 +64,15 @@ function extractTestsFromString(string) {
 
 function extractTestFromString(test) {
   var description = test.match(/.*/)[0]
-  test = test.replace(/.*/,'')
-  stylusAndCss = test.split(/.*@expect.*/).map(trimNewlines)
+    , test = test.replace(/.*/,'')
+    , stylusAndCss = test.split(/.*@expect.*/).map(trimNewlines)
+    , CleanCSS = new cleanCSS()
+    , expectedCss = CleanCSS.minify(stylusAndCss[1])
 
   return {
     description : description,
     givenStylus : stylusAndCss[0],
-    expectedCss : cleanCSS.process(stylusAndCss[1])
+    expectedCss : expectedCss
   }
 }
 
