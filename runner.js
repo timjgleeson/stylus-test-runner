@@ -16,12 +16,6 @@ var should   = require('should')
 // UTILS
 //
 
-// array utils
-
-function arrayify(it) {
-  return _.isArray(it) ? it : [it] ;
-}
-
 // string utils
 
 function isEmpty(string) {
@@ -32,9 +26,16 @@ function isEmptyFile(filePath) {
   return isEmpty(trimNewlines(fs.readFileSync(filePath, 'utf8')))
 }
 
-//  whitespace mutation utils
+// whitespace mutation utils
+
 function trimNewlines(string) { return string.replace(/^(\s*|\n*)|(\s*|\n*)$/g,'') }
 
+
+// array utils
+
+function arrayify(it) {
+  return _.isArray(it) ? it : [it] ;
+}
 
 
 //
@@ -45,7 +46,8 @@ function extractTestFromString(string) {
   var assertion = string.match(/.*/)[0]
     , test = string.replace(/.*/,'')
     , stylusAndCss = test.split(/.*@expect.*/).map(trimNewlines)
-    , CleanCSS = new cleanCSS()
+
+  var CleanCSS = new cleanCSS()
     , expectedCss = CleanCSS.minify(stylusAndCss[1])
 
   return {
@@ -56,23 +58,22 @@ function extractTestFromString(string) {
 }
 
 function extractTestsFromString(string) {
+
   //  Filter empty strings out, it seems that the
   //  @it line leaves an empty string entry behind in the array
-  return _.map( _.reject(string.split(/.*@it\s?/), isEmpty), extractTestFromString)
+  var approved = _.reject(string.split(/.*@it\s?/), isEmpty)
+  return _.map(approved , extractTestFromString)
 }
-
-
-function getTestsFromFile(filePath) {
-  var fileContents = trimNewlines(fs.readFileSync(filePath, 'utf8'))
-  return extractTestsFromString(fileContents)
-}
-
 
 //
 // DESCRIBE
 //
 
 function extractDescriptionFromString(string) {
+  if ( string.match(/.*/)[0].indexOf('@it') > 0) {
+    string = 'no description found \n' + string
+  }
+
   var title = string.match(/.*/)[0]
     , assertions = string.replace(/.*/,'')
 
@@ -83,9 +84,9 @@ function extractDescriptionFromString(string) {
 }
 
 function extractDescriptionsFromString(string) {
-  //  Filter empty strings out, it seems that the
-  //  @describe line leaves an empty string entry behind in the array
-  return _.map(_.reject(string.split(/.*@describe\s?/), isEmpty), extractDescriptionFromString)
+  approved = _.reject(string.split(/.*@describe\s?/), isEmpty)
+
+  return _.map(approved, extractDescriptionFromString)
 }
 
 function getDesciprtionsFromFiles(filePath) {
@@ -105,12 +106,13 @@ function forEachFile(config, callback) {
 
   var flatten = _.flatten( mapDescriptionsFromFile )
 
+
+
   _.each( flatten, callback )
 }
 
 function forEachAssertion(assertions, config, callback) {
-
-  var mapAssertionFromAssertions = _.map(assertions, getTestsFromFile)
+  var mapAssertionFromAssertions = extractTestsFromString( trimNewlines(assertions) )
 
   var flatten = _.flatten( mapAssertionFromAssertions )
 
@@ -127,7 +129,13 @@ function forEachAssertion(assertions, config, callback) {
 function stylus(string, config) {
   // First through the whole config at stylus, it should ignore stuff it cannot handle
   // like use/import/include etc?
+
   var thisStylus = new Stylus(string, config)
+
+  // reset paths
+  // optimisation
+  thisStylus.options.paths = []
+
   // Enumerate over the config options that the stylus API only makes available by methods
   _.each(['use', 'import', 'include'], function(option){
     if (config[option])  _.each(arrayify(config[option]), thisStylus[option], thisStylus)
@@ -157,7 +165,6 @@ function runner(config) {
 
     // sets up describe
     describe(description.title, function() {
-
 
       forEachAssertion(description.assertions, config, function(test){
         // run through each description
