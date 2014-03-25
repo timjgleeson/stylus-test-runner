@@ -2,32 +2,6 @@
 
 DSL for testing your stylus source code
 
-### Preview
-```
-// @describe clockhand()
-// @it should support 1 2 3 and 4up with sides only
-.foo
-  clockhand(1)
-  clockhand(1 2)
-  clockhand(1 2 3)
-  clockhand(1 2 3 4)
-
-// @expect
-.foo {
-  top: 1; right: 1; bottom: 1; left: 1;
-  top: 1; right: 2; bottom: 1; left: 2;
-  top: 1; right: 2; bottom: 3; left: 2;
-  top: 1; right: 2; bottom: 3; left: 4;
-}
-```
-```
-$ node test/test-runner.js
-
-  clockhand()
-    ✓ should support 1 2 3 and 4up for a given property (69ms)
-```
-
-
 ### Install
 
 I will eventually publish to Npm, add git url to `package.json` for now
@@ -47,4 +21,37 @@ var testRunnerConfig = {
 }
 
 require('stylus-test-runner')(testRunnerConfig)
+```
+
+In a ```.styl```, include the following.
+
+```
+// @describe This is a description
+// @it This is the stylus being tested
+// @expect This is the outputs css expected
+```
+
+### Preview
+```
+// @describe clearfix()
+
+// @it should output a clearfix styles to an element
+.class
+  clearfix()
+
+// @expect
+.class:after,
+.class:before {
+  content: "";
+  display: table;
+}
+.class:after {
+  clear: both;
+}
+```
+```
+$ node test/test-runner.js
+
+  clearfix()
+    ✓ should output a clearfix styles to an element (136ms)
 ```
