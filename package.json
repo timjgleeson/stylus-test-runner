@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "TODO"
+    "url": "git://github.com:timjgleeson/stylus-test-runner.git"
   },
   "keywords": [
     "Stylus",
@@ -16,7 +16,7 @@
     "test",
     "syntax"
   ],
-  "author": "Jason Kuhrt <jasonkuhrt@me.com> (http://jasonkuhrt.com)",
+  "author": "Timothy Gleeson <tim.j.gleeson@gmail.com>",
   "license": "MIT",
   "dependencies": {
     "mocha": "~1.17.1",
