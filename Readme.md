@@ -4,7 +4,9 @@ DSL for testing your stylus source code
 
 ### Install
 
-I will eventually publish to Npm, add git url to `package.json` for now
+```
+npm install stylus-test-runner
+```
 
 
 ### Api
