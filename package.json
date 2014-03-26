@@ -3,21 +3,11 @@
   "version": "0.0.2",
   "description": "Stylus syntax adaptor for testing your stylus source code",
   "main": "index.js",
-  "scripts": {
-    "test": "TODO"
-  },
+  "author": "Tim Gleeson",
   "repository": {
     "type": "git",
     "url": "git://github.com:timjgleeson/stylus-test-runner.git"
   },
-  "keywords": [
-    "Stylus",
-    "CSS",
-    "test",
-    "syntax"
-  ],
-  "author": "Timothy Gleeson <tim.j.gleeson@gmail.com>",
-  "license": "MIT",
   "dependencies": {
     "mocha": "~1.17.1",
     "stylus": "~0.42.0",
