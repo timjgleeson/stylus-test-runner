@@ -1,6 +1,6 @@
 {
   "name": "stylus-test-runner",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "Stylus syntax adaptor for testing your stylus source code",
   "main": "index.js",
   "author": "Tim Gleeson",
