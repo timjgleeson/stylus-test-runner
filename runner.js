@@ -100,12 +100,11 @@ function getDesciprtionsFromFiles(filePath) {
 //
 
 function forEachFile(config, callback) {
-  var testFiles = _.reject(glob.sync(config.testDirPath + '/**/*.styl'), isEmptyFile)
 
-  var mapDescriptionsFromFile = _.map(testFiles, getDesciprtionsFromFiles)
-
-  var flatten = _.flatten( mapDescriptionsFromFile )
-
+  var path = process.argv[2] || glob.sync(config.testDirPath + '/**/*.styl')
+    , testFiles = _.reject(path, isEmptyFile)
+    , mapDescriptionsFromFile = _.map(testFiles, getDesciprtionsFromFiles)
+    , flatten = _.flatten( mapDescriptionsFromFile )
 
 
   _.each( flatten, callback )

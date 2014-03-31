@@ -49,9 +49,20 @@ In a ```.styl```, include the following.
   clear: both;
 }
 ```
+
+### Testing
+
 ```
 $ node test/test-runner.js
 
   clearfix()
     ✓ should output a clearfix styles to an element (136ms)
 ```
+
+Or
+
+```npm test``` - Test everything
+
+Or
+
+```node test/test-runner.js test/tests/file.styl``` - Test specific file
