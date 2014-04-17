@@ -31,6 +31,7 @@ In a ```.styl```, include the following.
 // @describe This is a description
 // @it This is the stylus being tested
 // @expect This is the outputs css expected
+// @throws Expect the test to throw an error
 ```
 
 ### Preview
