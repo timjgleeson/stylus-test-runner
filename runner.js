@@ -9,7 +9,8 @@ var cleanCSS = require('clean-css')
 var Stylus   = require('stylus')
 var glob     = require('glob')
 var _        = require('lodash')
-var should   = require('should')
+var assert   = require('assert')
+require('should')
 
 
 //
@@ -44,16 +45,39 @@ function arrayify(it) {
 
 function extractTestFromString(string) {
   var assertion = string.match(/.*/)[0]
-    , test = string.replace(/.*/,'')
-    , stylusAndCss = test.split(/.*@expect.*/).map(trimNewlines)
+    , test = string.replace(/.*/, '')
 
-  var CleanCSS = new cleanCSS()
-    , expectedCss = CleanCSS.minify(stylusAndCss[1])
+  if (test.match(/@expect/)) {
+    var stylusAndCss = test.split(/.*@expect.*/).map(trimNewlines)
+      , CleanCSS = new cleanCSS()
+      , expectedCss = CleanCSS.minify(stylusAndCss[1])
 
-  return {
-    assertion : assertion,
-    givenStylus : stylusAndCss[0],
-    expectedCss : expectedCss
+    return {
+      assertion: assertion,
+      run: function (config) {
+        renderStylus(stylusAndCss[0], config.stylus, function (actualCss) {
+          actualCss.should.equal(expectedCss);
+        })
+      }
+    }
+  } else if (test.match(/@throws/)) {
+    var stylus = (test.split(/.*@throws.*/).map(trimNewlines))[0]
+      , error = (/@throws\s*(?:\/(.*)\/)?/).exec(test)[1]
+
+    if (typeof(error) !== 'undefined') {
+      error = new RegExp(error)
+    }
+
+    return {
+      assertion: assertion,
+      run: function (config) {
+        assert.throws(
+          function () {
+            renderStylus(stylus, config.stylus, function () {})
+          }
+        , error
+      )}
+    }
   }
 }
 
@@ -84,12 +108,12 @@ function extractDescriptionFromString(string) {
 }
 
 function extractDescriptionsFromString(string) {
-  approved = _.reject(string.split(/.*@describe\s?/), isEmpty)
+  var approved = _.reject(string.split(/.*@describe\s?/), isEmpty)
 
   return _.map(approved, extractDescriptionFromString)
 }
 
-function getDesciprtionsFromFiles(filePath) {
+function getDescriptionsFromFiles(filePath) {
   var fileContents = trimNewlines(fs.readFileSync(filePath, 'utf8'))
   return extractDescriptionsFromString(fileContents)
 }
@@ -102,7 +126,7 @@ function getDesciprtionsFromFiles(filePath) {
 function forEachFile(config, callback) {
   var testFiles = _.reject(glob.sync(config.testDirPath + '/**/*.styl'), isEmptyFile)
 
-  var mapDescriptionsFromFile = _.map(testFiles, getDesciprtionsFromFiles)
+  var mapDescriptionsFromFile = _.map(testFiles, getDescriptionsFromFiles)
 
   var flatten = _.flatten( mapDescriptionsFromFile )
 
@@ -111,7 +135,7 @@ function forEachFile(config, callback) {
   _.each( flatten, callback )
 }
 
-function forEachAssertion(assertions, config, callback) {
+function forEachAssertion(assertions, callback) {
   var mapAssertionFromAssertions = extractTestsFromString( trimNewlines(assertions) )
 
   var flatten = _.flatten( mapAssertionFromAssertions )
@@ -166,7 +190,7 @@ function runner(config) {
     // sets up describe
     describe(description.title, function() {
 
-      forEachAssertion(description.assertions, config, function(test){
+      forEachAssertion(description.assertions, function(test){
         // run through each description
         // get test from @it and @expect
         // add to array
@@ -174,9 +198,7 @@ function runner(config) {
 
 
         it(test.assertion, function() {
-          renderStylus(test.givenStylus, config.stylus, function(actualCss) {
-            actualCss.should.equal(test.expectedCss);
-          })
+          test.run(config)
         })
 
       })
